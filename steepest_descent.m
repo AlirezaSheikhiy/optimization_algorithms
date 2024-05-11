@@ -1,9 +1,9 @@
 % STEEPEST DESCENT
-% To Minimize Unconstrained Quadratic Problems
+% Minimization of Unconstrained Quadratic problems
 
 clc
-close all
 clear all
+close all
 
 format short;
 
