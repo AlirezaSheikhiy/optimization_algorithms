@@ -23,4 +23,4 @@ If you encounter any issues or have suggestions, please open an [issues](https:/
 
 ## License
 
-This project is licensed under the MIT License. See the [License](https://github.com/AlirezaSheikhiy/AlirezaSheikhiy/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License. See the [License](https://github.com/AlirezaSheikhiy/optimization_algorithms/blob/master/LICENSE) file for details.
