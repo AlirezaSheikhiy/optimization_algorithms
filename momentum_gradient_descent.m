@@ -5,32 +5,26 @@ clc
 clear all
 close all
 
-format short;
+format long;
 
-% Problem statement
-n = 2;
-l = 100;
-h = 200;
-Q = gallery('randcorr', n);
-Q = round((h-l) * Q + l);
-chol(Q);
-x = sym('x', [n, 1]);
-b = randi([l, h], [n, 1]);
+% Generate new problem
+[n, Q, x, b, f, df, x_old] = quadratic_form();
 
-% Define the function 'f(x)' and gradient of 'f(x)' 
-f = @(x) 1/2 * x' * Q * x - b' * x;
-df = @(x) 1/2 * Q * x - b; 
-
-% Initial guess
-x_old = randi([l, h], [n, 1]);
+% A matrix to store all 'x' vectors during iterations
+X = zeros(1, n);
+X(1, :) = x_old';
 
 % Initial velocity
 v_old = zeros([n, 1]);
 
+% A matrix to store all 'x' vectors during iterations
+V = zeros(1, n);
+V(1, :) = v_old';
+
 % Hyper parameters
 treshold = 1e-6;
 alpha = 0.001;
-beta = 0.01;
+beta = 0.1;
 
 % Define an index for count the number of iterations 
 i = 1;
@@ -41,29 +35,35 @@ flag = true;
 % Calculate the loop time elapsed
 tic
 
+% Momentum Gradient Descent algorithm
 while flag
+    % Calculate the gradient of 'f(x)' at 'x_old'
+    g = df(x_old);
+
     % Find the new 'v'
-    v_new = beta * v_old - alpha * df(x_old);
+    v_new = beta * v_old - alpha * g;
+    V(i+1, :) = v_new';
 
     % Find the new 'x'
     x_new = x_old + v_new;
+    X(i+1, :) = x_new';
 
     % Using Euclidean norm-2 to check treshold
     if norm(x_new - x_old, 2) <= treshold
         flag = false;
+    else
+        % Update parameters
+        x_old = x_new;
+        v_old = v_new;
     end
+
+    % Update the iterator variable
+    i = i + 1;
 
     % Print the new 'x' using c-style
     fprintf('x_%d = \n\n', i)
     disp(x_new);
     fprintf('\n')
-
-    % Update parameters
-    x_old = x_new;
-    v_old = v_new;
-    
-    % Update the iterator variable
-    i = i + 1;
 end
 
 % Get the loop time elapsed
