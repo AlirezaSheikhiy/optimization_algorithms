@@ -34,7 +34,7 @@ while flag
     d_old = -g_old;
 
     % This costly 'alpha' is for finding the exact solution of the problem
-    alpha = (-g_old' * d_old) / (d_old' * Q * d_old);
+    % alpha = (-g_old' * d_old) / (d_old' * Q * d_old);
 
     % Find the new 'x'
     x_new = x_old + alpha * d_old;
@@ -63,7 +63,7 @@ while flag
     i = i + 1;
 
     % Print the new 'x' using c-style
-    fprintf('x_%d = \n\n', i)
+    fprintf('x_%d = \n\n', i-1)
     disp(x_new);
     fprintf('\n')
 end
@@ -71,19 +71,5 @@ end
 % Get the loop time elapsed
 t = toc;
 
-% Print the results
-fprintf('\n____________________________________________________________________________________________________\n');
-fprintf("Objective function: f = %s\n", char(collect(1/2 * transpose(x) * Q * x - transpose(b) * x)));
-fprintf("Number of iterations: %d\n", i);
-fprintf("Time elapsed: %d seconds\n", t);
-fprintf('Minimum Value: %d\n', double(f(x_new)));
-fprintf('Minimum Location: x = [');
-for j=1:length(x_new)
-    if j==length(x_new)
-        fprintf('%d', double(x_new(j)));
-    else
-        fprintf('%d, ', double(x_new(j)));
-    end
-end
-fprintf("]'\n");
-fprintf('____________________________________________________________________________________________________\n\n\n');
+% Print the results using 'printer' function
+printer(f, Q, x, b, x_new, i, t);

@@ -5,12 +5,17 @@ function [n, Q, x, b, f, df, x_old] = quadratic_form()
     h = 200;
     % First method to generate a positive definite matrix
     Q = gallery('randcorr', n);
-    Q = round((h-l) * Q + l);
+    Q = round((h - l) * Q + l);
     % Second method to generate a positive definite matrix
     % Q = unifrnd(l, h, n, n)
     % Q = randi([l, h], n);
     % Q = Q * Q';
     % Q = Q + eye(n) * eps(max(abs(eig(Q)))) * 10;
+    % Third method to generate a positive definite matrix
+    % Q = randn(n);
+    % Q = Q + Q';
+    % Q = Q + n * eye(n);
+    % Q = (Q * Q');
     chol(Q);
     x = sym('x', [n, 1]);
     b = randi([l, h], [n, 1]);
