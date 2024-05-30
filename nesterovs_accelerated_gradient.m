@@ -1,5 +1,9 @@
+%% DESCRIPTION
+
 % NESTEROV'S ACCELARATED GRADIENTS
 % Minimization of Unconstrained Quadratic problems
+
+%% Settings
 
 clc
 clear all
@@ -7,27 +11,38 @@ close all
 
 format long;
 
-% Generate new problem
-[n, Q, x, b, f, df, x_old] = quadratic_form();
+%% Problem
 
-% A matrix to store all 'x' vectors during iterations
-X = zeros(1, n);
-X(1, :) = x_old';
+% Call 'problem' function to generate a new problem
+[n, f, df, Q, x, X] = quadratic_problem();
 
 % Initial velocity
-v_old = zeros([n, 1]);
+v1 = zeros([n, 1]);
 
 % A matrix to store all 'v' vectors during iterations
 V = zeros(1, n);
-V(1, :) = v_old';
+V(1, :) = v1';
 
-% Hyper parameters
+%% Hyper parameters
+
+% Set a treshold to stop the loop
 treshold = 1e-6;
-alpha = 0.001;
+
+% Learning rate
+% alpha = 0.001;
+
+% Momentum factor
 beta = 0.1;
 
-% Define an index for count the number of iterations 
-i = 1;
+% Armijo Rule parameters
+% alpha_max = randi([1, 4]);
+alpha_max = 1;
+c = 0.1;
+
+%% Loop settings
+
+% Define an index for count the number of iterations
+k = 1;
 
 % Define a boolean flag variable to controle the while loop
 flag = true;
@@ -35,39 +50,47 @@ flag = true;
 % Calculate the loop time elapsed
 tic
 
-% Nesterov's Accelerated Gradient algorithm
+%% Nesterov's Accelerated Gradient algorithm
+
 while flag
     % Calculate the lookahead gradient
-    g = df(x_old + beta * v_old);
+    g = df(x + beta * v1);
     
+    % Armijo rule
+    alpha = alpha_max;
+    while f(x + beta * v1 - alpha * g) > f(x) + c * alpha * g' * v1
+        alpha = alpha / 2;
+    end
+
     % Find the new 'v'
-    v_new = beta * v_old - alpha * g;
-    V(i+1, :) = v_new';
+    v2 = beta * v1 - alpha * g;
+    V(k+1, :) = v2';
 
     % Find the new 'x'
-    x_new = x_old + v_new;
-    X(i+1, :) = x_new';
+    x = x + v2;
+    X(k+1, :) = x';
 
-    % Using Euclidean norm-2 to check treshold
-    if norm(x_new - x_old, 2) <= treshold
+    % Using Euclidean norm-inf to check treshold
+    if norm(X(k+1, :)' - X(k, :)', inf) <= treshold
         flag = false;
     else
         % Update parameters
-        x_old = x_new;
-        v_old = v_new;
+        v1 = v2;
     end
 
     % Update the iterator variable
-    i = i + 1;
+    k = k + 1;
 
     % Print the new 'x' using c-style
-    fprintf('x_%d = \n\n', i-1)
-    disp(x_new);
+    fprintf('x_%d = \n\n', k-1)
+    disp(x);
     fprintf('\n')
 end
+
+%% Output settings
 
 % Get the loop time elapsed
 t = toc;
 
 % Print the results using 'printer' function
-printer(f, Q, x, b, x_new, i, t);
+quadratic_printer(f, x, k, t);

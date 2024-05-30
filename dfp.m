@@ -1,6 +1,6 @@
 %% DESCRIPTION
 
-% MOMENTUM GRADIENT DESCENT
+% Davidon-Fletcher-Powell (DFP)
 % Minimization of Unconstrained Quadratic problems
 
 %% Settings
@@ -16,23 +16,16 @@ format long;
 % Call 'problem' function to generate a new problem
 [n, f, df, Q, x, X] = quadratic_problem();
 
-% Initial velocity
-v1 = zeros([n, 1]);
-
-% A matrix to store all 'x' vectors during iterations
-V = zeros(1, n);
-V(1, :) = v1';
-
 %% Hyper parameters
 
 % Set a treshold to stop the loop
 treshold = 1e-6;
 
 % Learning rate
-alpha = 0.001;
+alpha = 0.5;
 
-% Momentum factor
-beta = 0.1;
+% Initial inversed hessian
+B = eye(n);
 
 %% Loop settings
 
@@ -45,26 +38,20 @@ flag = true;
 % Calculate the loop time elapsed
 tic
 
-%% Momentum Gradient Descent algorithm
+%% DFP algorithm
 
 while flag
-    % Calculate the gradient of 'f(x)' at 'x_old'
     g = df(x);
-
-    % Find the new 'v'
-    v2 = beta * v1 - alpha * g;
-    V(k+1, :) = v2';
-
-    % Find the new 'x'
-    x = x + v2;
+    p = -B * g;
+    x = x + alpha * p;
     X(k+1, :) = x';
+    delta_g = df(x) - g;
+    delta_x = x - X(k, :)';
+    B = B + ((delta_x * delta_x') / (delta_x' * delta_g)) - ((B * (delta_g * delta_g') * B') / (delta_g' * B * delta_g));
 
-    % Using Euclidean norm-inf to check treshold
+    % Using Euclidean norm-2 to check treshold
     if norm(X(k+1, :)' - X(k, :)', inf) <= treshold
         flag = false;
-    else
-        % Update parameters
-        v1 = v2;
     end
 
     % Update the iterator variable
@@ -82,4 +69,5 @@ end
 t = toc;
 
 % Print the results using 'printer' function
+% norm_printer(f, A, x, b, k, t);
 quadratic_printer(f, x, k, t);

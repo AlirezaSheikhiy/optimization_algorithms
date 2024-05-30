@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- DFP
+- BFGS
+- L-BFGS
 
 ### Changed
 
@@ -20,8 +21,19 @@ All notable changes to this project will be documented in this file.
 
 - None
 
-## [0.0.1] - 2024-12-05
+## [0.0.2] - 2024-31-05
 
 ### Added
 
-- Initial release of the project.
+- DFP
+- Armijo Rule
+- Goldstein Rule
+- Wolfe Conditions
+
+### Changed
+
+- Codes were compacted and optimized.
+
+### Fixed
+
+- The norm_problem generator was fixed.
